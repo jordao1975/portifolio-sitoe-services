@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitoe Service - Soluções Tecnológicas</title>
+    <!-- Inclui o framework de CSS Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Inclui Font Awesome para os ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inclui a fonte Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Inclui a biblioteca Three.js para as animações 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4a4e69;
+            --secondary-color: #22223b;
+            --accent-color: #9a8c98;
+            --light-color: #f2e9e4;
+            --dark-color: #14213d;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: var(--light-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-svg {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-svg:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        /* Animação do logo SVG */
+        .logo-svg-path {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .hero {
+            position: relative;
+            padding: 100px 0;
+            color: white;
+            background-color: var(--secondary-color);
+            overflow: hidden;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding-top: 50px;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #6d63ff, #ff79c6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: var(--light-color);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #6d63ff, #ff79c6);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(109, 99, 255, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(109, 99, 255, 0.6);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #6d63ff, #ff79c6);
+            border-radius: 2px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px) rotateX(2deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #6d63ff;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .service-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ff79c6;
+            margin: 15px 0;
+        }
+
+        .contact-form-container {
+            background: var(--secondary-color);
+            color: var(--light-color);
+            padding: 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .contact-form-container .form-control {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border-radius: 10px;
+        }
+        .contact-form-container .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .social-links a {
+            color: var(--light-color);
+            font-size: 1.5rem;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ff79c6;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            padding: 30px 0;
+            text-align: center;
+        }
+
+        .social-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .social-card:hover {
+            transform: translateY(-10px);
+        }
+        .social-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .social-card .icon.whatsapp-color { color: #25D366; }
+        .social-card .icon.facebook-color { color: #1877F2; }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3">
+        <div class="container">
+            <a class="navbar-brand logo-container" href="#">
+                <!-- Novo logotipo com setas e o "S" estilizado -->
+                <svg class="logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gradient-top" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6d63ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#ff79c6;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="gradient-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8e7d9b;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#4a4e69;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Seta de cima, animada -->
+                    <path class="logo-svg-path" fill="url(#gradient-top)" d="M100,20 C140,20 160,50 160,80 C160,110 140,140 100,140 L100,110 L120,110 L100,140 L80,110 L100,140 Z" />
+                    <!-- Seta de baixo -->
+                    <path fill="url(#gradient-bottom)" d="M100,180 C60,180 40,150 40,120 C40,90 60,60 100,60 L100,90 L80,90 L100,60 L120,90 L100,60 Z" />
+                </svg>
+                <span class="logo-text">Sitoe Service</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contato</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#direct-contacts">Contactos Diretos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="container hero-content">
+            <h1 class="hero-title">Sitoe Service</h1>
+            <p class="hero-subtitle">Soluções tecnológicas profissionais para o seu negócio</p>
+            <p>Oferecemos serviços especializados em manutenção de computadores, instalação de sistemas, gestão de tráfego pago e produção de conteúdo.</p>
+            <a href="#services" class="btn btn-primary mt-3">Ver Serviços</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5">
+        <div class="container">
+            <h2 class="section-title">Nossos Serviços</h2>
+            <div class="row g-4">
+                <!-- Service 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-tools"></i></div>
+                        <h3 class="service-title">Manutenção de Computadores</h3>
+                        <p>Serviços completos de manutenção preventiva e corretiva.</p>
+                        <div class="service-price">500 MTC</div>
+                    </div>
+                </div>
+                <!-- Service 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fab fa-windows"></i></div>
+                        <h3 class="service-title">Troca de Sistema</h3>
+                        <p>Instalação e configuração de Windows e Linux.</p>
+                        <div class="service-price">500 MTC</div>
+                    </div>
+                </div>
+                <!-- Service 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3 class="service-title">Gestor de Tráfego Pago</h3>
+                        <p>Gestão profissional de anúncios no Meta para maximizar seu retorno.</p>
+                        <div class="service-price">500 MTC</div>
+                    </div>
+                </div>
+                <!-- Service 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-video"></i></div>
+                        <h3 class="service-title">Assistente de Produção de Conteúdo</h3>
+                        <p>Criação de conteúdo de qualidade para redes sociais.</p>
+                        <div class="service-price">500 MTC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="py-5 bg-white">
+        <div class="container">
+            <h2 class="section-title">Sobre Nós</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <p>Somos uma equipa dedicada a oferecer soluções tecnológicas de qualidade para empresas e indivíduos. Com anos de experiência no mercado, garantimos serviços profissionais que atendem às suas necessidades específicas.</p>
+                    <p>Nossos valores incluem comprometimento com a qualidade, pontualidade na entrega e suporte contínuo aos nossos clientes.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section id="contact" class="py-5">
+        <div class="container">
+            <h2 class="section-title">Entre em Contato</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="contact-form-container">
+                        <h3 class="text-center mb-4">Solicite seu Serviço</h3>
+                        <form id="contact-form">
+                            <!-- Campos do formulário com atributos name para o EmailJS -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Seu Nome</label>
+                                <input type="text" id="name" name="from_name" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Seu E-mail</label>
+                                <input type="email" id="email" name="from_email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contact-input" class="form-label">Seu Contacto (WhatsApp)</label>
+                                <input type="text" id="contact-input" name="from_contact" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="service-request" class="form-label">Qual serviço você precisa?</label>
+                                <textarea id="service-request" name="message" rows="4" class="form-control" required></textarea>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary mt-3">
+                                    <i class="fas fa-paper-plane me-2"></i> Enviar Solicitação
+                                </button>
+                            </div>
+                        </form>
+                        <div id="form-message" class="text-center mt-4 alert d-none">
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Direct Contacts Section -->
+    <section id="direct-contacts" class="py-5 bg-white">
+        <div class="container">
+            <h2 class="section-title">Contactos Diretos</h2>
+            <p class="text-center mb-5">Conecte-se conosco através das nossas plataformas sociais para um contacto mais rápido.</p>
+            <div class="row justify-content-center g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="social-card">
+                        <div class="icon facebook-color"><i class="fab fa-facebook-f"></i></div>
+                        <h4 class="mt-3">Facebook</h4>
+                        <p>Stret Gang</p>
+                        <a href="https://www.facebook.com/profile.php?id=100063861648526" target="_blank" class="btn btn-primary mt-3">
+                            <i class="fas fa-external-link-alt me-2"></i> Visitar Página
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="social-card">
+                        <div class="icon whatsapp-color"><i class="fab fa-whatsapp"></i></div>
+                        <h4 class="mt-3">WhatsApp</h4>
+                        <p>Converse connosco</p>
+                        <a href="https://wa.me/258879240789" target="_blank" class="btn btn-primary mt-3">
+                            <i class="fas fa-comment-dots me-2"></i> Enviar Mensagem
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Sitoe Service - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <!-- Inclui o JavaScript do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Inclui a biblioteca do EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <script>
+        // Lógica de inicialização da página e do formulário
+        window.onload = function() {
+            // Inicializa o EmailJS com a sua chave pública
+            emailjs.init({
+                publicKey: "_VBgpqmLiz_lnFEB0",
+            });
+            
+            // Adiciona o event listener ao formulário
+            document.getElementById('contact-form').addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const form = this;
+                const messageDiv = document.getElementById('form-message');
+                const messageP = messageDiv.querySelector('p');
+                const submitBtn = form.querySelector('button[type="submit"]');
+
+                submitBtn.disabled = true; // Desabilita o botão para evitar múltiplos cliques
+                messageDiv.classList.add('d-none'); // Esconde a mensagem anterior
+
+                // Verifica se todos os campos estão preenchidos
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const contact = document.getElementById('contact-input').value;
+                const serviceRequest = document.getElementById('service-request').value;
+
+                if (!name || !email || !contact || !serviceRequest) {
+                    messageDiv.classList.remove('alert-success', 'alert-danger', 'd-none');
+                    messageDiv.classList.add('alert-danger');
+                    messageP.textContent = "Por favor, preencha todos os campos do formulário.";
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                // Envia o formulário
+                emailjs.sendForm('service_qlyagmy', 'template_hcpj1e9', this)
+                    .then(
+                        (response) => {
+                            console.log('SUCCESS!', response.status, response.text);
+                            messageDiv.classList.remove('alert-danger', 'd-none');
+                            messageDiv.classList.add('alert-success');
+                            messageP.textContent = "Sua solicitação foi enviada com sucesso!";
+                            form.reset();
+                            submitBtn.disabled = false;
+
+                            setTimeout(() => {
+                                messageDiv.classList.add('d-none');
+                            }, 5000);
+                        },
+                        (error) => {
+                            console.log('FAILED...', error);
+                            messageDiv.classList.remove('alert-success', 'd-none');
+                            messageDiv.classList.add('alert-danger');
+                            messageP.textContent = `Falha ao enviar. Por favor, tente novamente mais tarde. Erro: ${error.text}`;
+                            submitBtn.disabled = false;
+                        },
+                    );
+            });
+            
+            // Lógica para a animação 3D de partículas
+            const canvas = document.getElementById('hero-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+
+            // Adiciona luzes
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            directionalLight.position.set(0, 1, 1);
+            scene.add(directionalLight);
+            
+            // Criação das partículas
+            const particleCount = 1000;
+            const particlesGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            const color1 = new THREE.Color('#ff79c6');
+            const color2 = new THREE.Color('#6d63ff');
+            
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 50;
+                positions[i + 1] = (Math.random() - 0.5) * 50;
+                positions[i + 2] = (Math.random() - 0.5) * 50;
+                
+                const color = i % 2 === 0 ? color1 : color2;
+                colors[i] = color.r;
+                colors[i + 1] = color.g;
+                colors[i + 2] = color.b;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const particles = new THREE.Points(particlesGeometry, particleMaterial);
+            scene.add(particles);
+
+            camera.position.z = 5;
+
+            // Rotação com o mouse
+            let mouseX = 0;
+            let mouseY = 0;
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+            
+            // Animação
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Animação das partículas
+                particles.rotation.x += 0.0005;
+                particles.rotation.y += 0.001;
+
+                // Animação da câmera com o mouse
+                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+
+            // Redimensionamento
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            animate();
+        };
+    </script>
+</body>
+</html>
