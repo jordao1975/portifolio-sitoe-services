@@ -14,10 +14,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
-            --primary-color: #4a4e69;
-            --secondary-color: #22223b;
+            --primary-color: #4a4e69; /* Contraste elevado com light-color */
+            --secondary-color: #22223b; /* Contraste elevado com light-color */
             --accent-color: #9a8c98;
-            --light-color: #f2e9e4;
+            --light-color: #f2e9e4; /* Contraste elevado com dark-color e secondary-color */
             --dark-color: #14213d;
         }
 
@@ -26,6 +26,37 @@
             background-color: var(--light-color);
             color: var(--secondary-color);
             overflow-x: hidden;
+        }
+        
+        /* Estilos do Ecrã de Carregamento */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner-grow {
+            color: var(--accent-color);
+        }
+
+        /* Estilos de foco para acessibilidade */
+        a:focus, button:focus, input:focus, textarea:focus {
+            outline: 3px solid #6d63ff;
+            outline-offset: 2px;
+            border-radius: 5px;
         }
 
         .navbar {
@@ -140,6 +171,17 @@
             border-radius: 2px;
         }
         
+        /* Efeito de transição nas seções */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .service-card {
             background: white;
             border-radius: 15px;
@@ -151,13 +193,29 @@
             perspective: 1000px;
             text-align: center;
             padding: 30px;
+            position: relative;
         }
         
         .service-card:hover {
             transform: translateY(-10px) rotateX(2deg);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
+
+        .service-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+        }
         
+        .service-content {
+            position: relative;
+            z-index: 1;
+        }
+
         .service-icon {
             font-size: 3rem;
             margin-bottom: 20px;
@@ -231,6 +289,29 @@
         .social-card .icon.whatsapp-color { color: #25D366; }
         .social-card .icon.facebook-color { color: #1877F2; }
 
+        .portfolio-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            text-align: center;
+        }
+        .portfolio-card:hover {
+            transform: translateY(-10px);
+        }
+        .portfolio-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .portfolio-content {
+            padding: 20px;
+        }
+        .portfolio-title {
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 3rem;
@@ -242,12 +323,20 @@
     </style>
 </head>
 <body>
+    <!-- Ecrã de Carregamento -->
+    <div id="loading-overlay">
+        <div class="spinner-grow" role="status">
+            <span class="visually-hidden">A carregar...</span>
+        </div>
+        <p class="mt-3">A carregar...</p>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3">
         <div class="container">
             <a class="navbar-brand logo-container" href="#">
-                <!-- Novo logotipo com setas e o "S" estilizado -->
-                <svg class="logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <svg class="logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+                    <title id="logoTitle">Logotipo da Sitoe Service</title>
                     <defs>
                         <linearGradient id="gradient-top" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" style="stop-color:#6d63ff;stop-opacity:1" />
@@ -265,13 +354,16 @@
                 </svg>
                 <span class="logo-text">Sitoe Service</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="#services">Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#portfolio">Portfólio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#about">Sobre</a>
@@ -299,44 +391,93 @@
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-5">
+    <section id="services" class="py-5 fade-in-section">
         <div class="container">
             <h2 class="section-title">Nossos Serviços</h2>
             <div class="row g-4">
                 <!-- Service 1 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-tools"></i></div>
-                        <h3 class="service-title">Manutenção de Computadores</h3>
-                        <p>Serviços completos de manutenção preventiva e corretiva.</p>
-                        <div class="service-price">500 MTC</div>
+                        <canvas id="service-canvas-1" class="service-canvas" aria-hidden="true"></canvas>
+                        <div class="service-content">
+                            <div class="service-icon"><i class="fas fa-tools"></i></div>
+                            <h3 class="service-title">Manutenção de Computadores</h3>
+                            <p>Serviços completos de manutenção preventiva e corretiva.</p>
+                            <div class="service-price">500 MTC</div>
+                        </div>
                     </div>
                 </div>
                 <!-- Service 2 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="service-card">
-                        <div class="service-icon"><i class="fab fa-windows"></i></div>
-                        <h3 class="service-title">Troca de Sistema</h3>
-                        <p>Instalação e configuração de Windows e Linux.</p>
-                        <div class="service-price">500 MTC</div>
+                        <canvas id="service-canvas-2" class="service-canvas" aria-hidden="true"></canvas>
+                        <div class="service-content">
+                            <div class="service-icon"><i class="fab fa-windows"></i></div>
+                            <h3 class="service-title">Troca de Sistema</h3>
+                            <p>Instalação e configuração de Windows e Linux.</p>
+                            <div class="service-price">500 MTC</div>
+                        </div>
                     </div>
                 </div>
                 <!-- Service 3 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
-                        <h3 class="service-title">Gestor de Tráfego Pago</h3>
-                        <p>Gestão profissional de anúncios no Meta para maximizar seu retorno.</p>
-                        <div class="service-price">500 MTC</div>
+                        <canvas id="service-canvas-3" class="service-canvas" aria-hidden="true"></canvas>
+                        <div class="service-content">
+                            <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3 class="service-title">Gestor de Tráfego Pago</h3>
+                            <p>Gestão profissional de anúncios no Meta para maximizar seu retorno.</p>
+                            <div class="service-price">500 MTC</div>
+                        </div>
                     </div>
                 </div>
                 <!-- Service 4 -->
                 <div class="col-md-6 col-lg-3">
                     <div class="service-card">
-                        <div class="service-icon"><i class="fas fa-video"></i></div>
-                        <h3 class="service-title">Assistente de Produção de Conteúdo</h3>
-                        <p>Criação de conteúdo de qualidade para redes sociais.</p>
-                        <div class="service-price">500 MTC</div>
+                        <canvas id="service-canvas-4" class="service-canvas" aria-hidden="true"></canvas>
+                        <div class="service-content">
+                            <div class="service-icon"><i class="fas fa-video"></i></div>
+                            <h3 class="service-title">Assistente de Produção de Conteúdo</h3>
+                            <p>Criação de conteúdo de qualidade para redes sociais.</p>
+                            <div class="service-price">500 MTC</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-5 bg-white fade-in-section">
+        <div class="container">
+            <h2 class="section-title">Portfólio</h2>
+            <p class="text-center mb-5">Conheça alguns dos nossos projetos recentes.</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="portfolio-card">
+                        <img src="https://placehold.co/600x400/9a8c98/f2e9e4?text=Projeto+1" alt="Exemplo de projeto 1: Design de Website Moderno" class="img-fluid">
+                        <div class="portfolio-content">
+                            <h4 class="portfolio-title">Design de Website Moderno</h4>
+                            <p>Criação de um website responsivo e otimizado para uma start-up de tecnologia.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="portfolio-card">
+                        <img src="https://placehold.co/600x400/4a4e69/f2e9e4?text=Projeto+2" alt="Exemplo de projeto 2: Campanha de Marketing Digital" class="img-fluid">
+                        <div class="portfolio-content">
+                            <h4 class="portfolio-title">Campanha de Marketing Digital</h4>
+                            <p>Desenvolvimento e gestão de uma campanha de tráfego pago no Meta com resultados de $10.000 em vendas.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="portfolio-card">
+                        <img src="https://placehold.co/600x400/9a8c98/f2e9e4?text=Projeto+3" alt="Exemplo de projeto 3: Produção de Conteúdo para Mídias Sociais" class="img-fluid">
+                        <div class="portfolio-content">
+                            <h4 class="portfolio-title">Produção de Conteúdo para Redes Sociais</h4>
+                            <p>Criação de vídeos e posts que aumentaram o engajamento em 200% para um cliente.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -344,7 +485,7 @@
     </section>
     
     <!-- About Section -->
-    <section id="about" class="py-5 bg-white">
+    <section id="about" class="py-5 fade-in-section">
         <div class="container">
             <h2 class="section-title">Sobre Nós</h2>
             <div class="row justify-content-center">
@@ -357,7 +498,7 @@
     </section>
 
     <!-- Contact Form Section -->
-    <section id="contact" class="py-5">
+    <section id="contact" class="py-5 fade-in-section">
         <div class="container">
             <h2 class="section-title">Entre em Contato</h2>
             <div class="row justify-content-center">
@@ -383,8 +524,8 @@
                                 <textarea id="service-request" name="message" rows="4" class="form-control" required></textarea>
                             </div>
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary mt-3">
-                                    <i class="fas fa-paper-plane me-2"></i> Enviar Solicitação
+                                <button type="submit" class="btn btn-primary mt-3" aria-label="Enviar solicitação de serviço">
+                                    <i class="fas fa-paper-plane me-2" aria-hidden="true"></i> Enviar Solicitação
                                 </button>
                             </div>
                         </form>
@@ -398,28 +539,28 @@
     </section>
 
     <!-- Direct Contacts Section -->
-    <section id="direct-contacts" class="py-5 bg-white">
+    <section id="direct-contacts" class="py-5 bg-white fade-in-section">
         <div class="container">
             <h2 class="section-title">Contactos Diretos</h2>
-            <p class="text-center mb-5">Conecte-se conosco através das nossas plataformas sociais para um contacto mais rápido.</p>
+            <p class="text-center mb-5">Conecte-se connosco através das nossas plataformas sociais para um contacto mais rápido.</p>
             <div class="row justify-content-center g-4">
                 <div class="col-md-6 col-lg-4">
                     <div class="social-card">
-                        <div class="icon facebook-color"><i class="fab fa-facebook-f"></i></div>
+                        <div class="icon facebook-color"><i class="fab fa-facebook-f" aria-hidden="true"></i></div>
                         <h4 class="mt-3">Facebook</h4>
                         <p>Stret Gang</p>
-                        <a href="https://www.facebook.com/profile.php?id=100063861648526" target="_blank" class="btn btn-primary mt-3">
-                            <i class="fas fa-external-link-alt me-2"></i> Visitar Página
+                        <a href="https://www.facebook.com/profile.php?id=100063861648526" target="_blank" class="btn btn-primary mt-3" aria-label="Visitar a página de Facebook da Stret Gang">
+                            <i class="fas fa-external-link-alt me-2" aria-hidden="true"></i> Visitar Página
                         </a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4">
                     <div class="social-card">
-                        <div class="icon whatsapp-color"><i class="fab fa-whatsapp"></i></div>
+                        <div class="icon whatsapp-color"><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
                         <h4 class="mt-3">WhatsApp</h4>
                         <p>Converse connosco</p>
-                        <a href="https://wa.me/258879240789" target="_blank" class="btn btn-primary mt-3">
-                            <i class="fas fa-comment-dots me-2"></i> Enviar Mensagem
+                        <a href="https://wa.me/258879240789" target="_blank" class="btn btn-primary mt-3" aria-label="Enviar mensagem de WhatsApp para a Sitoe Service">
+                            <i class="fas fa-comment-dots me-2" aria-hidden="true"></i> Enviar Mensagem
                         </a>
                     </div>
                 </div>
@@ -442,6 +583,10 @@
     <script>
         // Lógica de inicialização da página e do formulário
         window.onload = function() {
+            // Esconde o ecrã de carregamento quando a página está pronta
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.classList.add('hidden');
+
             // Inicializa o EmailJS com a sua chave pública
             emailjs.init({
                 publicKey: "_VBgpqmLiz_lnFEB0",
@@ -497,11 +642,11 @@
                     );
             });
             
-            // Lógica para a animação 3D de partículas
-            const canvas = document.getElementById('hero-canvas');
+            // Lógica para a animação 3D de partículas e o objeto flutuante
+            const heroCanvas = document.getElementById('hero-canvas');
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setClearColor(0x000000, 0);
 
@@ -545,6 +690,19 @@
             const particles = new THREE.Points(particlesGeometry, particleMaterial);
             scene.add(particles);
 
+            // Criação do objeto flutuante (representando a mão)
+            const geometry = new THREE.IcosahedronGeometry(1.5, 1);
+            const material = new THREE.MeshStandardMaterial({ 
+                color: '#6d63ff',
+                transparent: true,
+                opacity: 0.4,
+                roughness: 0.5,
+                metalness: 0.7
+            });
+            const floatingObject = new THREE.Mesh(geometry, material);
+            floatingObject.position.set(-5, 0, -5);
+            scene.add(floatingObject);
+            
             camera.position.z = 5;
 
             // Rotação com o mouse
@@ -555,13 +713,22 @@
                 mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
             });
             
-            // Animação
-            function animate() {
-                requestAnimationFrame(animate);
+            // Variáveis de tempo para a animação de flutuação
+            const clock = new THREE.Clock();
+
+            // Animação do canvas principal
+            function animateHero() {
+                requestAnimationFrame(animateHero);
 
                 // Animação das partículas
                 particles.rotation.x += 0.0005;
                 particles.rotation.y += 0.001;
+
+                // Animação do objeto flutuante
+                const elapsedTime = clock.getElapsedTime();
+                floatingObject.position.y = Math.sin(elapsedTime) * 0.5;
+                floatingObject.rotation.y += 0.002;
+                floatingObject.rotation.x += 0.001;
 
                 // Animação da câmera com o mouse
                 camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
@@ -571,14 +738,92 @@
                 renderer.render(scene, camera);
             }
 
-            // Redimensionamento
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            // Lógica para a animação 3D de partículas nos cartões de serviço
+            const serviceCanvases = [
+                { id: 'service-canvas-1', color: '#6d63ff' },
+                { id: 'service-canvas-2', color: '#ff79c6' },
+                { id: 'service-canvas-3', color: '#4a4e69' },
+                { id: 'service-canvas-4', color: '#9a8c98' }
+            ];
+
+            serviceCanvases.forEach(item => {
+                const sCanvas = document.getElementById(item.id);
+                const sScene = new THREE.Scene();
+                const sCamera = new THREE.PerspectiveCamera(75, sCanvas.clientWidth / sCanvas.clientHeight, 0.1, 100);
+                const sRenderer = new THREE.WebGLRenderer({ canvas: sCanvas, antialias: true, alpha: true });
+                sRenderer.setSize(sCanvas.clientWidth, sCanvas.clientHeight);
+                sRenderer.setClearColor(0x000000, 0);
+
+                const sParticleCount = 200;
+                const sParticlesGeometry = new THREE.BufferGeometry();
+                const sPositions = new Float32Array(sParticleCount * 3);
+                const sColors = new Float32Array(sParticleCount * 3);
+
+                const sParticleColor = new THREE.Color(item.color);
+                
+                for (let i = 0; i < sParticleCount * 3; i += 3) {
+                    sPositions[i] = (Math.random() - 0.5) * 10;
+                    sPositions[i + 1] = (Math.random() - 0.5) * 10;
+                    sPositions[i + 2] = (Math.random() - 0.5) * 10;
+                    sColors[i] = sParticleColor.r;
+                    sColors[i + 1] = sParticleColor.g;
+                    sColors[i + 2] = sParticleColor.b;
+                }
+                
+                sParticlesGeometry.setAttribute('position', new THREE.BufferAttribute(sPositions, 3));
+                sParticlesGeometry.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+
+                const sParticleMaterial = new THREE.PointsMaterial({
+                    size: 0.15,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.7
+                });
+                
+                const sParticles = new THREE.Points(sParticlesGeometry, sParticleMaterial);
+                sScene.add(sParticles);
+
+                sCamera.position.z = 5;
+
+                // Animação do canvas do serviço
+                function animateService() {
+                    requestAnimationFrame(animateService);
+                    sParticles.rotation.y += 0.005;
+                    sRenderer.render(sScene, sCamera);
+                }
+                animateService();
+
+                // Redimensionamento do canvas do serviço
+                window.addEventListener('resize', () => {
+                    sCamera.aspect = sCanvas.clientWidth / sCanvas.clientHeight;
+                    sCamera.updateProjectionMatrix();
+                    sRenderer.setSize(sCanvas.clientWidth, sCanvas.clientHeight);
+                });
             });
 
-            animate();
+            // Animação de todos os canvas na página
+            animateHero();
+
+            // Lógica para o efeito de aparecimento ao fazer scroll
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
         };
     </script>
 </body>
