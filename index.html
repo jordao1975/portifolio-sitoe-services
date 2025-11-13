@@ -4,312 +4,523 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sitoe Service - Soluções Tecnológicas</title>
-    <!-- Inclui o framework de CSS Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Inclui Font Awesome para os ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inclui a fonte Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Inclui a biblioteca Three.js para as animações 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root {
-            --primary-color: #4a4e69; /* Contraste elevado com light-color */
-            --secondary-color: #22223b; /* Contraste elevado com light-color */
-            --accent-color: #9a8c98;
-            --light-color: #f2e9e4; /* Contraste elevado com dark-color e secondary-color */
-            --dark-color: #14213d;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--light-color);
-            color: var(--secondary-color);
             overflow-x: hidden;
+            background: #000814;
+            color: #fff;
         }
-        
-        /* Estilos do Ecrã de Carregamento */
-        #loading-overlay {
+
+        #hero-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--secondary-color);
-            color: var(--light-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        #loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .spinner-grow {
-            color: var(--accent-color);
+            z-index: 0;
         }
 
-        /* Estilos de foco para acessibilidade */
-        a:focus, button:focus, input:focus, textarea:focus {
-            outline: 3px solid #6d63ff;
-            outline-offset: 2px;
-            border-radius: 5px;
+        .content {
+            position: relative;
+            z-index: 1;
         }
 
         .navbar {
-            background: var(--light-color);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 8, 20, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 1rem 0;
+            z-index: 100;
+            border-bottom: 2px solid rgba(26, 158, 179, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-        }
-
-        .logo-svg {
-            height: 40px;
-            width: auto;
-            margin-right: 10px;
             transition: transform 0.3s ease;
         }
 
-        .logo-svg:hover {
-            transform: scale(1.1);
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-svg {
+            height: 50px;
+            width: auto;
+            margin-right: 15px;
+            filter: drop-shadow(0 0 10px rgba(26, 158, 179, 0.5));
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
         }
 
         .logo-text {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--primary-color);
-        }
-
-        /* Animação do logo SVG */
-        .logo-svg-path {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .hero {
-            position: relative;
-            padding: 100px 0;
-            color: white;
-            background-color: var(--secondary-color);
-            overflow: hidden;
-        }
-
-        #hero-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding-top: 50px;
-        }
-
-        .hero-title {
-            font-size: 4rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            background: linear-gradient(to right, #6d63ff, #ff79c6);
+            background: linear-gradient(135deg, #1a9eb3, #ff8c42);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #1a9eb3, #ff8c42);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #fff !important;
+        }
+
+        .nav-link:hover:after {
+            width: 100%;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-3d-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1a9eb3, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease;
+            text-shadow: 0 0 60px rgba(26, 158, 179, 0.5);
+            position: relative;
+        }
+
         .hero-subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: var(--light-color);
+            font-size: 1.8rem;
+            color: #1a9eb3;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1.2s ease;
+            font-weight: 300;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 1.4s ease;
+            max-width: 700px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 1.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #6d63ff, #ff79c6);
-            border: none;
-            border-radius: 50px;
-            padding: 12px 30px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(109, 99, 255, 0.4);
+            background: linear-gradient(45deg, #1a9eb3, #17879a) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 15px 40px !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 8px 25px rgba(26, 158, 179, 0.5) !important;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(109, 99, 255, 0.6);
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff8c42, #ff6b1a) !important;
+            border: none !important;
+            border-radius: 50px !important;
+            padding: 15px 40px !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 8px 25px rgba(255, 140, 66, 0.5) !important;
+        }
+
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-5px) scale(1.05) !important;
+            box-shadow: 0 15px 40px rgba(26, 158, 179, 0.7) !important;
+        }
+
+        .section {
+            padding: 6rem 2rem;
+            background: rgba(0, 8, 20, 0.9);
+            backdrop-filter: blur(10px);
         }
 
         .section-title {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            margin-bottom: 40px;
+            margin-bottom: 1rem;
             text-align: center;
+            background: linear-gradient(135deg, #1a9eb3, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             position: relative;
         }
 
         .section-title:after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
+            width: 100px;
             height: 4px;
-            background: linear-gradient(to right, #6d63ff, #ff79c6);
+            background: linear-gradient(to right, #1a9eb3, #ff8c42);
             border-radius: 2px;
+            box-shadow: 0 0 20px rgba(26, 158, 179, 0.6);
         }
-        
-        /* Efeito de transição nas seções */
-        .fade-in-section {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in-section.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 4rem;
         }
 
         .service-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(145deg, rgba(26, 158, 179, 0.15), rgba(255, 140, 66, 0.1));
+            border: 2px solid rgba(26, 158, 179, 0.3);
+            border-radius: 25px;
+            padding: 2.5rem;
+            transition: all 0.5s ease;
             height: 100%;
             transform-style: preserve-3d;
             perspective: 1000px;
             text-align: center;
-            padding: 30px;
             position: relative;
-        }
-        
-        .service-card:hover {
-            transform: translateY(-10px) rotateX(2deg);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
         }
 
-        .service-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.1;
+        .service-card.animate-in {
+            animation: slideInUp 0.8s ease forwards;
         }
-        
-        .service-content {
-            position: relative;
-            z-index: 1;
+
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .service-card:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(26, 158, 179, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .service-card:hover:before {
+            opacity: 1;
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .service-card:hover {
+            transform: translateY(-20px) rotateX(5deg) scale(1.03);
+            border-color: rgba(26, 158, 179, 0.8);
+            box-shadow: 0 25px 70px rgba(26, 158, 179, 0.5), 0 0 50px rgba(255, 140, 66, 0.3);
         }
 
         .service-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: #6d63ff;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #1a9eb3, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: bounce 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         .service-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        
-        .service-price {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #ff79c6;
-            margin: 15px 0;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .service-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-price {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1a9eb3, #ff8c42);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 1rem;
+        }
+
+        .bg-white {
+            background: rgba(10, 10, 30, 0.8) !important;
         }
 
         .contact-form-container {
-            background: var(--secondary-color);
-            color: var(--light-color);
-            padding: 60px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(145deg, rgba(26, 158, 179, 0.2), rgba(255, 140, 66, 0.15));
+            border: 2px solid rgba(26, 158, 179, 0.4);
+            padding: 3rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .contact-form-container .form-control {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        .form-control {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 2px solid rgba(26, 158, 179, 0.3) !important;
             color: white !important;
-            border-radius: 10px;
+            border-radius: 15px !important;
+            padding: 12px 20px !important;
+            transition: all 0.3s ease !important;
         }
-        .contact-form-container .form-control::placeholder {
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(26, 158, 179, 0.8) !important;
+            box-shadow: 0 0 20px rgba(26, 158, 179, 0.5) !important;
+            color: white !important;
+        }
+
+        .form-control::placeholder {
             color: rgba(255, 255, 255, 0.5) !important;
         }
 
-        .social-links a {
-            color: var(--light-color);
-            font-size: 1.5rem;
-            margin: 0 15px;
-            transition: color 0.3s ease;
-        }
-
-        .social-links a:hover {
-            color: #ff79c6;
-        }
-
-        footer {
-            background-color: var(--secondary-color);
-            color: var(--light-color);
-            padding: 30px 0;
-            text-align: center;
+        .form-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
         .social-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
+            background: linear-gradient(145deg, rgba(26, 158, 179, 0.15), rgba(255, 140, 66, 0.1));
+            border: 2px solid rgba(26, 158, 179, 0.3);
+            border-radius: 25px;
+            padding: 2.5rem;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.8);
         }
-        .social-card:hover {
-            transform: translateY(-10px);
-        }
-        .social-card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        .social-card .icon.whatsapp-color { color: #25D366; }
-        .social-card .icon.facebook-color { color: #1877F2; }
 
-        .portfolio-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-            overflow: hidden;
+        .social-card.animate-in {
+            animation: zoomIn 0.6s ease forwards;
+        }
+
+        @keyframes zoomIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .social-card:hover {
+            transform: translateY(-15px) scale(1.05);
+            border-color: rgba(26, 158, 179, 0.8);
+            box-shadow: 0 20px 50px rgba(26, 158, 179, 0.4);
+        }
+
+        .social-card .icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .social-card .icon.whatsapp-color { 
+            color: #25D366;
+            filter: drop-shadow(0 0 15px #25D366);
+        }
+
+        .social-card .icon.facebook-color { 
+            color: #1877F2;
+            filter: drop-shadow(0 0 15px #1877F2);
+        }
+
+        .social-card h4 {
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-card p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        footer {
+            background: rgba(0, 8, 20, 0.95);
+            padding: 3rem 0;
             text-align: center;
+            border-top: 2px solid rgba(26, 158, 179, 0.3);
         }
-        .portfolio-card:hover {
-            transform: translateY(-10px);
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
         }
-        .portfolio-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
+
+        /* Botão flutuante do WhatsApp */
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse-whatsapp 2s infinite;
         }
-        .portfolio-content {
-            padding: 20px;
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 40px rgba(37, 211, 102, 0.8);
         }
-        .portfolio-title {
-            font-weight: 600;
+
+        @keyframes pulse-whatsapp {
+            0% {
+                box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
+            }
+            50% {
+                box-shadow: 0 8px 40px rgba(37, 211, 102, 0.9);
+            }
+            100% {
+                box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
+            }
+        }
+
+        .whatsapp-float i {
+            animation: shake 2s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+            50% { transform: rotate(0deg); }
+        }
+
+        .alert {
+            border-radius: 15px !important;
+            border: 2px solid rgba(26, 158, 179, 0.4) !important;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2) !important;
+            color: #4ade80 !important;
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.2) !important;
+            color: #ff6b6b !important;
         }
 
         @media (max-width: 768px) {
@@ -317,319 +528,285 @@
                 font-size: 3rem;
             }
             .hero-subtitle {
-                font-size: 1.2rem;
+                font-size: 1.5rem;
+            }
+            .section-title {
+                font-size: 2.5rem;
+            }
+            .hero-3d-container {
+                height: 350px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Ecrã de Carregamento -->
-    <div id="loading-overlay">
-        <div class="spinner-grow" role="status">
-            <span class="visually-hidden">A carregar...</span>
-        </div>
-        <p class="mt-3">A carregar...</p>
+    <canvas id="hero-canvas"></canvas>
+    
+    <!-- Formas flutuantes decorativas -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
     </div>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3">
+    
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand logo-container" href="#">
-                <svg class="logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
-                    <title id="logoTitle">Logotipo da Sitoe Service</title>
+                <svg class="logo-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <linearGradient id="gradient-top" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#6d63ff;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#ff79c6;stop-opacity:1" />
+                        <linearGradient id="gradient-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#17a2b8;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#138496;stop-opacity:1" />
                         </linearGradient>
-                        <linearGradient id="gradient-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#8e7d9b;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#4a4e69;stop-opacity:1" />
+                        <linearGradient id="gradient-orange" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#fd7e14;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#e8590c;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="gradient-gray" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6c757d;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#495057;stop-opacity:1" />
                         </linearGradient>
                     </defs>
-                    <!-- Seta de cima, animada -->
-                    <path class="logo-svg-path" fill="url(#gradient-top)" d="M100,20 C140,20 160,50 160,80 C160,110 140,140 100,140 L100,110 L120,110 L100,140 L80,110 L100,140 Z" />
-                    <!-- Seta de baixo -->
-                    <path fill="url(#gradient-bottom)" d="M100,180 C60,180 40,150 40,120 C40,90 60,60 100,60 L100,90 L80,90 L100,60 L120,90 L100,60 Z" />
+                    
+                    <!-- Letra S estilizada com setas integradas -->
+                    <!-- Parte superior (seta para cima + curva do S) -->
+                    <path fill="url(#gradient-cyan)" d="
+                        M 100 30
+                        L 120 50 L 110 50
+                        Q 110 70, 90 75
+                        Q 70 80, 70 95
+                        Q 70 105, 80 110
+                        L 120 110
+                        Q 140 110, 140 90
+                        Q 140 70, 120 60
+                        L 100 60
+                        Z
+                    "/>
+                    
+                    <!-- Parte inferior (curva do S + seta para baixo) -->
+                    <path fill="url(#gradient-gray)" d="
+                        M 100 140
+                        Q 120 140, 130 130
+                        Q 140 120, 140 105
+                        Q 140 95, 130 90
+                        L 80 90
+                        Q 60 90, 60 110
+                        Q 60 130, 80 140
+                        L 90 140
+                        L 90 150 L 100 170
+                        L 110 150 L 110 140
+                        Z
+                    "/>
+                    
+                    <!-- Seta laranja (destaque) -->
+                    <path fill="url(#gradient-orange)" d="
+                        M 100 25
+                        L 85 45 L 95 45
+                        L 95 55 L 105 55
+                        L 105 45 L 115 45
+                        Z
+                    " opacity="0.9"/>
                 </svg>
                 <span class="logo-text">Sitoe Service</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Abrir e fechar navegação">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" style="background: rgba(26, 158, 179, 0.3); border: 1px solid rgba(26, 158, 179, 0.5);">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#services">Serviços</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">Sobre</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contato</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#direct-contacts">Contactos Diretos</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Serviços</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Sobre</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contato</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#direct-contacts">Contactos Diretos</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <canvas id="hero-canvas"></canvas>
-        <div class="container hero-content">
+    <div class="content">
+        <section class="hero">
+            <div class="hero-3d-container" id="hero-3d"></div>
             <h1 class="hero-title">Sitoe Service</h1>
-            <p class="hero-subtitle">Soluções tecnológicas profissionais para o seu negócio</p>
-            <p>Oferecemos serviços especializados em manutenção de computadores, instalação de sistemas, gestão de tráfego pago e produção de conteúdo.</p>
-            <a href="#services" class="btn btn-primary mt-3">Ver Serviços</a>
-        </div>
-    </section>
+            <p class="hero-subtitle">Inovação Tecnológica ao Seu Alcance</p>
+            <p>Transformamos desafios tecnológicos em soluções inteligentes para impulsionar o seu negócio</p>
+            <div class="hero-buttons">
+                <a href="#services" class="btn btn-primary"><i class="fas fa-rocket me-2"></i>Nossos Serviços</a>
+                <a href="#contact" class="btn btn-secondary"><i class="fas fa-envelope me-2"></i>Entre em Contato</a>
+            </div>
+        </section>
 
-    <!-- Services Section -->
-    <section id="services" class="py-5 fade-in-section">
-        <div class="container">
-            <h2 class="section-title">Nossos Serviços</h2>
-            <div class="row g-4">
-                <!-- Service 1 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <canvas id="service-canvas-1" class="service-canvas" aria-hidden="true"></canvas>
-                        <div class="service-content">
+        <section id="services" class="section">
+            <div class="container">
+                <h2 class="section-title">Nossos Serviços</h2>
+                <p class="section-subtitle">Soluções completas para todas as suas necessidades tecnológicas</p>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-card">
                             <div class="service-icon"><i class="fas fa-tools"></i></div>
                             <h3 class="service-title">Manutenção de Computadores</h3>
                             <p>Serviços completos de manutenção preventiva e corretiva.</p>
                             <div class="service-price">500 MTC</div>
                         </div>
                     </div>
-                </div>
-                <!-- Service 2 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <canvas id="service-canvas-2" class="service-canvas" aria-hidden="true"></canvas>
-                        <div class="service-content">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-card">
                             <div class="service-icon"><i class="fab fa-windows"></i></div>
                             <h3 class="service-title">Troca de Sistema</h3>
                             <p>Instalação e configuração de Windows e Linux.</p>
                             <div class="service-price">500 MTC</div>
                         </div>
                     </div>
-                </div>
-                <!-- Service 3 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <canvas id="service-canvas-3" class="service-canvas" aria-hidden="true"></canvas>
-                        <div class="service-content">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-card">
                             <div class="service-icon"><i class="fas fa-chart-line"></i></div>
                             <h3 class="service-title">Gestor de Tráfego Pago</h3>
                             <p>Gestão profissional de anúncios no Meta para maximizar seu retorno.</p>
                             <div class="service-price">500 MTC</div>
                         </div>
                     </div>
-                </div>
-                <!-- Service 4 -->
-                <div class="col-md-6 col-lg-3">
-                    <div class="service-card">
-                        <canvas id="service-canvas-4" class="service-canvas" aria-hidden="true"></canvas>
-                        <div class="service-content">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="service-card">
                             <div class="service-icon"><i class="fas fa-video"></i></div>
-                            <h3 class="service-title">Assistente de Produção de Conteúdo</h3>
+                            <h3 class="service-title">Produção de Conteúdo</h3>
                             <p>Criação de conteúdo de qualidade para redes sociais.</p>
                             <div class="service-price">500 MTC</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- About Section -->
-    <section id="about" class="py-5 fade-in-section">
-        <div class="container">
-            <h2 class="section-title">Sobre Nós</h2>
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <p>Somos uma equipa dedicada a oferecer soluções tecnológicas de qualidade para empresas e indivíduos. Com anos de experiência no mercado, garantimos serviços profissionais que atendem às suas necessidades específicas.</p>
-                    <p>Nossos valores incluem comprometimento com a qualidade, pontualidade na entrega e suporte contínuo aos nossos clientes.</p>
+        </section>
+        
+        <section id="about" class="section bg-white">
+            <div class="container">
+                <h2 class="section-title">Sobre Nós</h2>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        <p style="font-size: 1.15rem; line-height: 1.8; color: rgba(255, 255, 255, 0.8);">
+                            Somos uma equipa dedicada a oferecer soluções tecnológicas de qualidade para empresas e indivíduos. Com anos de experiência no mercado, garantimos serviços profissionais que atendem às suas necessidades específicas.
+                        </p>
+                        <p style="font-size: 1.15rem; line-height: 1.8; color: rgba(255, 255, 255, 0.8);">
+                            Nossos valores incluem comprometimento com a qualidade, pontualidade na entrega e suporte contínuo aos nossos clientes.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Form Section -->
-    <section id="contact" class="py-5 fade-in-section">
-        <div class="container">
-            <h2 class="section-title">Entre em Contato</h2>
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div class="contact-form-container">
-                        <h3 class="text-center mb-4">Solicite seu Serviço</h3>
-                        <form id="contact-form">
-                            <!-- Campos do formulário com atributos name para o EmailJS -->
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Seu Nome</label>
-                                <input type="text" id="name" name="from_name" class="form-control" required>
+        <section id="contact" class="section">
+            <div class="container">
+                <h2 class="section-title">Entre em Contato</h2>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="contact-form-container">
+                            <h3 class="text-center mb-4" style="color: #fff; font-weight: 700;">Solicite seu Serviço</h3>
+                            <form id="contact-form">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Seu Nome</label>
+                                    <input type="text" id="name" name="from_name" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Seu E-mail</label>
+                                    <input type="email" id="email" name="from_email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contact-input" class="form-label">Seu Contacto (WhatsApp)</label>
+                                    <input type="text" id="contact-input" name="from_contact" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="service-request" class="form-label">Qual serviço você precisa?</label>
+                                    <textarea id="service-request" name="message" rows="4" class="form-control" required></textarea>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary mt-3">
+                                        <i class="fas fa-paper-plane me-2"></i> Enviar Solicitação
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="form-message" class="text-center mt-4 alert d-none">
+                                <p></p>
                             </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Seu E-mail</label>
-                                <input type="email" id="email" name="from_email" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="contact-input" class="form-label">Seu Contacto (WhatsApp)</label>
-                                <input type="text" id="contact-input" name="from_contact" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="service-request" class="form-label">Qual serviço você precisa?</label>
-                                <textarea id="service-request" name="message" rows="4" class="form-control" required></textarea>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary mt-3" aria-label="Enviar solicitação de serviço">
-                                    <i class="fas fa-paper-plane me-2" aria-hidden="true"></i> Enviar Solicitação
-                                </button>
-                            </div>
-                        </form>
-                        <div id="form-message" class="text-center mt-4 alert d-none">
-                            <p></p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Direct Contacts Section -->
-    <section id="direct-contacts" class="py-5 bg-white fade-in-section">
-        <div class="container">
-            <h2 class="section-title">Contactos Diretos</h2>
-            <p class="text-center mb-5">Conecte-se connosco através das nossas plataformas sociais para um contacto mais rápido.</p>
-            <div class="row justify-content-center g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="social-card">
-                        <div class="icon facebook-color"><i class="fab fa-facebook-f" aria-hidden="true"></i></div>
-                        <h4 class="mt-3">Facebook</h4>
-                        <p>Stret Gang</p>
-                        <a href="https://www.facebook.com/profile.php?id=100063861648526" target="_blank" class="btn btn-primary mt-3" aria-label="Visitar a página de Facebook da Stret Gang">
-                            <i class="fas fa-external-link-alt me-2" aria-hidden="true"></i> Visitar Página
-                        </a>
+        <section id="direct-contacts" class="section bg-white">
+            <div class="container">
+                <h2 class="section-title">Contactos Diretos</h2>
+                <p class="text-center mb-5" style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem;">
+                    Conecte-se conosco através das nossas plataformas sociais para um contacto mais rápido.
+                </p>
+                <div class="row justify-content-center g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="social-card">
+                            <div class="icon facebook-color"><i class="fab fa-facebook-f"></i></div>
+                            <h4 class="mt-3">Facebook</h4>
+                            <p>Stret Gang</p>
+                            <a href="https://www.facebook.com/profile.php?id=100063861648526" target="_blank" class="btn btn-primary mt-3">
+                                <i class="fas fa-external-link-alt me-2"></i> Visitar Página
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="social-card">
-                        <div class="icon whatsapp-color"><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
-                        <h4 class="mt-3">WhatsApp</h4>
-                        <p>Converse connosco</p>
-                        <a href="https://wa.me/258879240789" target="_blank" class="btn btn-primary mt-3" aria-label="Enviar mensagem de WhatsApp para a Sitoe Service">
-                            <i class="fas fa-comment-dots me-2" aria-hidden="true"></i> Enviar Mensagem
-                        </a>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="social-card">
+                            <div class="icon whatsapp-color"><i class="fab fa-whatsapp"></i></div>
+                            <h4 class="mt-3">WhatsApp</h4>
+                            <p>Converse connosco</p>
+                            <a href="https://wa.me/258879240789" target="_blank" class="btn btn-primary mt-3">
+                                <i class="fas fa-comment-dots me-2"></i> Enviar Mensagem
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Sitoe Service - Todos os direitos reservados</p>
-        </div>
-    </footer>
+        <footer>
+            <div class="container">
+                <p>&copy; 2024 Sitoe Service - Todos os direitos reservados</p>
+            </div>
+        </footer>
+    </div>
 
-    <!-- Inclui o JavaScript do Bootstrap -->
+    <!-- Botão flutuante do WhatsApp -->
+    <a href="https://wa.me/258879240789?text=Olá!%20Vim%20do%20site%20e%20gostaria%20de%20mais%20informações" 
+       class="whatsapp-float" 
+       target="_blank" 
+       title="Fale conosco no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Inclui a biblioteca do EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
-        // Lógica de inicialização da página e do formulário
-        window.onload = function() {
-            // Esconde o ecrã de carregamento quando a página está pronta
-            const loadingOverlay = document.getElementById('loading-overlay');
-            loadingOverlay.classList.add('hidden');
+        let scene, camera, renderer, heroScene, heroCamera, heroRenderer;
+        let particles, mainSphere, orbitSpheres = [], connections = [];
+        let mouseX = 0, mouseY = 0;
 
-            // Inicializa o EmailJS com a sua chave pública
-            emailjs.init({
-                publicKey: "_VBgpqmLiz_lnFEB0",
-            });
-            
-            // Adiciona o event listener ao formulário
-            document.getElementById('contact-form').addEventListener('submit', function(event) {
-                event.preventDefault(); 
-                const form = this;
-                const messageDiv = document.getElementById('form-message');
-                const messageP = messageDiv.querySelector('p');
-                const submitBtn = form.querySelector('button[type="submit"]');
-
-                submitBtn.disabled = true; // Desabilita o botão para evitar múltiplos cliques
-                messageDiv.classList.add('d-none'); // Esconde a mensagem anterior
-
-                // Verifica se todos os campos estão preenchidos
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const contact = document.getElementById('contact-input').value;
-                const serviceRequest = document.getElementById('service-request').value;
-
-                if (!name || !email || !contact || !serviceRequest) {
-                    messageDiv.classList.remove('alert-success', 'alert-danger', 'd-none');
-                    messageDiv.classList.add('alert-danger');
-                    messageP.textContent = "Por favor, preencha todos os campos do formulário.";
-                    submitBtn.disabled = false;
-                    return;
-                }
-
-                // Envia o formulário
-                emailjs.sendForm('service_qlyagmy', 'template_hcpj1e9', this)
-                    .then(
-                        (response) => {
-                            console.log('SUCCESS!', response.status, response.text);
-                            messageDiv.classList.remove('alert-danger', 'd-none');
-                            messageDiv.classList.add('alert-success');
-                            messageP.textContent = "Sua solicitação foi enviada com sucesso!";
-                            form.reset();
-                            submitBtn.disabled = false;
-
-                            setTimeout(() => {
-                                messageDiv.classList.add('d-none');
-                            }, 5000);
-                        },
-                        (error) => {
-                            console.log('FAILED...', error);
-                            messageDiv.classList.remove('alert-success', 'd-none');
-                            messageDiv.classList.add('alert-danger');
-                            messageP.textContent = `Falha ao enviar. Por favor, tente novamente mais tarde. Erro: ${error.text}`;
-                            submitBtn.disabled = false;
-                        },
-                    );
-            });
-            
-            // Lógica para a animação 3D de partículas e o objeto flutuante
-            const heroCanvas = document.getElementById('hero-canvas');
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
+        // CANVAS DE FUNDO (partículas)
+        function initBackground() {
+            const canvas = document.getElementById('hero-canvas');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setClearColor(0x000000, 0);
 
-            // Adiciona luzes
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-            directionalLight.position.set(0, 1, 1);
-            scene.add(directionalLight);
-            
-            // Criação das partículas
-            const particleCount = 1000;
+            // Partículas de fundo
+            const particleCount = 2000;
             const particlesGeometry = new THREE.BufferGeometry();
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
             
-            const color1 = new THREE.Color('#ff79c6');
-            const color2 = new THREE.Color('#6d63ff');
+            const color1 = new THREE.Color('#1a9eb3');
+            const color2 = new THREE.Color('#ff8c42');
             
             for (let i = 0; i < particleCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 50;
-                positions[i + 1] = (Math.random() - 0.5) * 50;
-                positions[i + 2] = (Math.random() - 0.5) * 50;
+                positions[i] = (Math.random() - 0.5) * 100;
+                positions[i + 1] = (Math.random() - 0.5) * 100;
+                positions[i + 2] = (Math.random() - 0.5) * 100;
                 
                 const color = i % 2 === 0 ? color1 : color2;
                 colors[i] = color.r;
@@ -641,148 +818,269 @@
             particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
             const particleMaterial = new THREE.PointsMaterial({
-                size: 0.1,
+                size: 0.15,
                 vertexColors: true,
                 transparent: true,
-                opacity: 0.8
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
             });
             
-            const particles = new THREE.Points(particlesGeometry, particleMaterial);
+            particles = new THREE.Points(particlesGeometry, particleMaterial);
             scene.add(particles);
 
-            // Criação do objeto flutuante (representando a mão)
-            const geometry = new THREE.IcosahedronGeometry(1.5, 1);
-            const material = new THREE.MeshStandardMaterial({ 
-                color: '#6d63ff',
+            camera.position.z = 15;
+
+            animateBackground();
+        }
+
+        function animateBackground() {
+            requestAnimationFrame(animateBackground);
+
+            particles.rotation.x += 0.0005;
+            particles.rotation.y += 0.001;
+
+            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        // CANVAS HERO 3D (esfera central com orbitantes)
+        function initHero3D() {
+            const container = document.getElementById('hero-3d');
+            heroScene = new THREE.Scene();
+            heroCamera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            heroRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            heroRenderer.setSize(container.clientWidth, container.clientHeight);
+            heroRenderer.setClearColor(0x000000, 0);
+            container.appendChild(heroRenderer.domElement);
+
+            // Esfera central wireframe com raio
+            const sphereGeometry = new THREE.SphereGeometry(3, 32, 32);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x1a9eb3,
+                wireframe: true,
                 transparent: true,
-                opacity: 0.4,
-                roughness: 0.5,
-                metalness: 0.7
+                opacity: 0.6
             });
-            const floatingObject = new THREE.Mesh(geometry, material);
-            floatingObject.position.set(-5, 0, -5);
-            scene.add(floatingObject);
+            mainSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            heroScene.add(mainSphere);
+
+            // Adicionar raio no topo
+            const boltGeometry = new THREE.ConeGeometry(0.4, 1.5, 4);
+            const boltMaterial = new THREE.MeshBasicMaterial({ color: 0xff8c42 });
+            const bolt = new THREE.Mesh(boltGeometry, boltMaterial);
+            bolt.position.y = 4;
+            bolt.rotation.z = Math.PI;
+            heroScene.add(bolt);
+
+            // Criar 6 esferas orbitantes
+            const orbitRadius = 6;
+            const sphereColors = [0x1a9eb3, 0xff8c42];
             
-            camera.position.z = 5;
+            for (let i = 0; i < 6; i++) {
+                const smallSphereGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+                const smallSphereMaterial = new THREE.MeshBasicMaterial({
+                    color: sphereColors[i % 2],
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const smallSphere = new THREE.Mesh(smallSphereGeometry, smallSphereMaterial);
+                
+                const angle = (Math.PI * 2 / 6) * i;
+                smallSphere.userData = {
+                    angle: angle,
+                    radius: orbitRadius,
+                    speed: 0.01,
+                    verticalOffset: Math.sin(angle) * 2
+                };
+                
+                heroScene.add(smallSphere);
+                orbitSpheres.push(smallSphere);
 
-            // Rotação com o mouse
-            let mouseX = 0;
-            let mouseY = 0;
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            });
-            
-            // Variáveis de tempo para a animação de flutuação
-            const clock = new THREE.Clock();
-
-            // Animação do canvas principal
-            function animateHero() {
-                requestAnimationFrame(animateHero);
-
-                // Animação das partículas
-                particles.rotation.x += 0.0005;
-                particles.rotation.y += 0.001;
-
-                // Animação do objeto flutuante
-                const elapsedTime = clock.getElapsedTime();
-                floatingObject.position.y = Math.sin(elapsedTime) * 0.5;
-                floatingObject.rotation.y += 0.002;
-                floatingObject.rotation.x += 0.001;
-
-                // Animação da câmera com o mouse
-                camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-                camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
-                camera.lookAt(scene.position);
-
-                renderer.render(scene, camera);
+                // Criar linhas de conexão
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: sphereColors[i % 2],
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const points = [new THREE.Vector3(0, 0, 0), smallSphere.position];
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                heroScene.add(line);
+                connections.push(line);
             }
 
-            // Lógica para a animação 3D de partículas nos cartões de serviço
-            const serviceCanvases = [
-                { id: 'service-canvas-1', color: '#6d63ff' },
-                { id: 'service-canvas-2', color: '#ff79c6' },
-                { id: 'service-canvas-3', color: '#4a4e69' },
-                { id: 'service-canvas-4', color: '#9a8c98' }
-            ];
+            heroCamera.position.z = 12;
 
-            serviceCanvases.forEach(item => {
-                const sCanvas = document.getElementById(item.id);
-                const sScene = new THREE.Scene();
-                const sCamera = new THREE.PerspectiveCamera(75, sCanvas.clientWidth / sCanvas.clientHeight, 0.1, 100);
-                const sRenderer = new THREE.WebGLRenderer({ canvas: sCanvas, antialias: true, alpha: true });
-                sRenderer.setSize(sCanvas.clientWidth, sCanvas.clientHeight);
-                sRenderer.setClearColor(0x000000, 0);
+            animateHero3D();
+        }
 
-                const sParticleCount = 200;
-                const sParticlesGeometry = new THREE.BufferGeometry();
-                const sPositions = new Float32Array(sParticleCount * 3);
-                const sColors = new Float32Array(sParticleCount * 3);
+        function animateHero3D() {
+            requestAnimationFrame(animateHero3D);
 
-                const sParticleColor = new THREE.Color(item.color);
+            // Rotação da esfera central
+            mainSphere.rotation.y += 0.005;
+            mainSphere.rotation.x += 0.003;
+
+            // Animar esferas orbitantes
+            orbitSpheres.forEach((sphere, index) => {
+                sphere.userData.angle += sphere.userData.speed;
                 
-                for (let i = 0; i < sParticleCount * 3; i += 3) {
-                    sPositions[i] = (Math.random() - 0.5) * 10;
-                    sPositions[i + 1] = (Math.random() - 0.5) * 10;
-                    sPositions[i + 2] = (Math.random() - 0.5) * 10;
-                    sColors[i] = sParticleColor.r;
-                    sColors[i + 1] = sParticleColor.g;
-                    sColors[i + 2] = sParticleColor.b;
-                }
-                
-                sParticlesGeometry.setAttribute('position', new THREE.BufferAttribute(sPositions, 3));
-                sParticlesGeometry.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+                sphere.position.x = Math.cos(sphere.userData.angle) * sphere.userData.radius;
+                sphere.position.z = Math.sin(sphere.userData.angle) * sphere.userData.radius;
+                sphere.position.y = Math.sin(sphere.userData.angle * 2) * sphere.userData.verticalOffset;
 
-                const sParticleMaterial = new THREE.PointsMaterial({
-                    size: 0.15,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.7
-                });
-                
-                const sParticles = new THREE.Points(sParticlesGeometry, sParticleMaterial);
-                sScene.add(sParticles);
-
-                sCamera.position.z = 5;
-
-                // Animação do canvas do serviço
-                function animateService() {
-                    requestAnimationFrame(animateService);
-                    sParticles.rotation.y += 0.005;
-                    sRenderer.render(sScene, sCamera);
-                }
-                animateService();
-
-                // Redimensionamento do canvas do serviço
-                window.addEventListener('resize', () => {
-                    sCamera.aspect = sCanvas.clientWidth / sCanvas.clientHeight;
-                    sCamera.updateProjectionMatrix();
-                    sRenderer.setSize(sCanvas.clientWidth, sCanvas.clientHeight);
-                });
+                // Atualizar linhas de conexão
+                const positions = connections[index].geometry.attributes.position.array;
+                positions[3] = sphere.position.x;
+                positions[4] = sphere.position.y;
+                positions[5] = sphere.position.z;
+                connections[index].geometry.attributes.position.needsUpdate = true;
             });
 
-            // Animação de todos os canvas na página
-            animateHero();
+            heroRenderer.render(heroScene, heroCamera);
+        }
 
-            // Lógica para o efeito de aparecimento ao fazer scroll
-            const sections = document.querySelectorAll('.fade-in-section');
+        // Event Listeners
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        window.addEventListener('resize', () => {
+            // Redimensionar canvas de fundo
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Redimensionar canvas hero 3D
+            const container = document.getElementById('hero-3d');
+            if (container && heroCamera && heroRenderer) {
+                heroCamera.aspect = container.clientWidth / container.clientHeight;
+                heroCamera.updateProjectionMatrix();
+                heroRenderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        });
+
+        // Inicializar EmailJS
+        window.onload = function() {
+            // Inicializa EmailJS com sua Public Key
+            emailjs.init("_VBgpqmLiz_lnFEB0");
+
+            // Inicializar animações 3D
+            initBackground();
+            initHero3D();
+
+            // Formulário de contato
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const form = this;
+                    const messageDiv = document.getElementById('form-message');
+                    const messageP = messageDiv.querySelector('p');
+                    const submitBtn = form.querySelector('button[type="submit"]');
+
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Enviando...';
+                    messageDiv.classList.add('d-none');
+
+                    const name = document.getElementById('name').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const contact = document.getElementById('contact-input').value.trim();
+                    const serviceRequest = document.getElementById('service-request').value.trim();
+
+                    // Validação dos campos
+                    if (!name || !email || !contact || !serviceRequest) {
+                        messageDiv.classList.remove('alert-success', 'alert-danger', 'd-none');
+                        messageDiv.classList.add('alert-danger');
+                        messageP.textContent = "⚠️ Por favor, preencha todos os campos do formulário.";
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Enviar Solicitação';
+                        return;
+                    }
+
+                    // Validação de email
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        messageDiv.classList.remove('alert-success', 'alert-danger', 'd-none');
+                        messageDiv.classList.add('alert-danger');
+                        messageP.textContent = "⚠️ Por favor, insira um email válido.";
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Enviar Solicitação';
+                        return;
+                    }
+
+                    // Enviar via EmailJS
+                    emailjs.sendForm('service_qlyagmy', 'template_hcpj1e9', form)
+                        .then(
+                            function(response) {
+                                console.log('✅ EMAIL ENVIADO COM SUCESSO!', response.status, response.text);
+                                messageDiv.classList.remove('alert-danger', 'd-none');
+                                messageDiv.classList.add('alert-success');
+                                messageP.innerHTML = "✅ <strong>Sucesso!</strong> Sua solicitação foi enviada. Entraremos em contato em breve!";
+                                form.reset();
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Enviar Solicitação';
+
+                                setTimeout(() => {
+                                    messageDiv.classList.add('d-none');
+                                }, 7000);
+                            },
+                            function(error) {
+                                console.error('❌ ERRO AO ENVIAR EMAIL:', error);
+                                messageDiv.classList.remove('alert-success', 'd-none');
+                                messageDiv.classList.add('alert-danger');
+                                messageP.innerHTML = `❌ <strong>Erro ao enviar!</strong> Por favor, tente novamente ou entre em contato via WhatsApp.<br><small>Erro técnico: ${error.text || 'Desconhecido'}</small>`;
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Enviar Solicitação';
+                            }
+                        );
+                });
+            }
+
+            // Animações ao scroll
             const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
             };
 
-            const observer = new IntersectionObserver((entries, observer) => {
+            const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
+                        entry.target.classList.add('animate-in');
                     }
                 });
             }, observerOptions);
 
-            sections.forEach(section => {
-                observer.observe(section);
+            // Observar títulos de seção
+            document.querySelectorAll('.section-title').forEach(title => {
+                observer.observe(title);
+            });
+
+            // Observar cards de serviço com delay
+            document.querySelectorAll('.service-card').forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                observer.observe(card);
+            });
+
+            // Observar cards sociais
+            document.querySelectorAll('.social-card').forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.2}s`;
+                observer.observe(card);
+            });
+
+            // Scroll suave
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
             });
         };
     </script>
